@@ -22,7 +22,7 @@ export const mockDoctors: Doctor[] = Array.from({ length: 6 }).map((_, i) => ({
   speciality: "Dental",
   experienceYears: 7,
   rating: 4.8,
-  avatarUrl: i % 2 === 0 ? "/images/doctor1.png" : "/images/doctor2.png",
+  avatarUrl: i % 2 === 0 ? "/images/dr1.svg" : "/images/dr2.svg" ,
   isFavourite: i % 3 === 0,
 }));
 

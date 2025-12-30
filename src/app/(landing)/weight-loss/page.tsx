@@ -1,5 +1,6 @@
 import { FigmaHero } from "@/src/components/layout/Hero";
 import { Button } from "@/src/components/ui/Button";
+import Link from "next/link";
 import Image from "next/image";
 
 export default function WeightLossPage() {
@@ -196,6 +197,7 @@ export default function WeightLossPage() {
 
               {/* CTA */}
               <div className="mt-8 flex flex-col items-center gap-4 lg:items-start">
+                <Link href="/assessment">
                 <Button
                   className="w-full max-w-[320px] rounded-[14px] px-8 py-4 text-[14px] font-semibold text-white transition-opacity hover:opacity-90"
                   style={{
@@ -206,6 +208,7 @@ export default function WeightLossPage() {
                 >
                   Start Assessment
                 </Button>
+                </Link>
 
                 <p className="max-w-[520px] text-center text-[12px] leading-[1.6] lg:text-left" style={{ color: "var(--c-text-muted)" }}>
                   Begin your online form today and receive a same-day doctor review. Achieve effective and safe

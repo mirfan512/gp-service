@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { FigmaHero } from "@/src/components/layout/Hero";
 import Image from "next/image";
 import * as React from "react";
 
@@ -115,28 +116,9 @@ export default function WeightLossAssessmentPage() {
   return (
     <div style={{ background: "var(--c-bg)", color: "var(--c-text)" }}>
       {/* HERO */}
-      <section className="hero-gradient hero-figma">
-        <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
-          <div className="relative flex min-h-[190px] items-center py-10 lg:min-h-[220px]">
-            <h1 className="text-[34px] font-extrabold leading-[1.06] tracking-[-0.02em] text-white sm:text-[40px] lg:text-[52px]">
-              Weight Loss Injectables
-              <br />
-              Medical Questionnaire
-            </h1>
-
-            {/* Badge */}
-            <div className="absolute right-0 top-10 hidden lg:block">
-              <Image
-                src="/icons/Greenbackgroundlogo1.svg"
-                alt="Online GP Services"
-                width={130}
-                height={130}
-                className="drop-shadow-[0_14px_28px_rgba(0,0,0,0.25)]"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      <FigmaHero
+        title={"Weight Loss Injectables Medical Questionnaire"}
+        badgeSrc="/icons/Greenbackgroundlogo1.svg"/>
 
       {/* FORM WRAP */}
       <section className="py-10">

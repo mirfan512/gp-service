@@ -25,7 +25,7 @@ export function FigmaHero({
       <div className={clsx("mx-auto max-w-[1440px] px-6 lg:px-12", containerClassName)}>
         <div className="relative flex min-h-[240px] items-center py-12 lg:min-h-[300px] lg:py-16">
           <div>
-            <h1 className="max-w-[980px] text-[44px] leading-[1.05] font-extrabold text-white tracking-[-0.02em] lg:text-[64px]">
+            <h1 className="max-w-[980px] text-[44px] leading-[1.05] font-semibold text-white tracking-[-0.02em] lg:text-[64px]">
               {title}
             </h1>
 

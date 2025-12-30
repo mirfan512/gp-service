@@ -187,12 +187,17 @@ export function Navbar() {
             <ThemeToggle />
 
             <div className="hidden md:flex items-center gap-3">
+              <Link href="/login" className="w-full" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="primary" size="md">
                 Login
               </Button>
+              </Link>
+
+              <Link href="/register" className="w-full" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="outline" size="md">
                 Signup
               </Button>
+                </Link>
             </div>
 
             <button
@@ -253,12 +258,16 @@ export function Navbar() {
               </div>
 
               <div className="px-4 pt-4 flex flex-col gap-3">
+                <Link href="/login" className="w-full" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="primary" size="md" className="w-full">
                   Login
                 </Button>
+                </Link>
+                <Link href="/register" className="w-full" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="outline" size="md" className="w-full">
                   Signup
                 </Button>
+                </Link>
               </div>
             </div>
           </div>

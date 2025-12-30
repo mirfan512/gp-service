@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Button } from "@/src/components/ui/Button";
+import Link from "next/link";
 
 export function PrivateAppointments() {
   return (
@@ -135,6 +136,7 @@ export function PrivateAppointments() {
 
                 {/* Card button */}
                 <div className="mt-5">
+                  <Link href="/doctors" >
                   <Button
                     className="w-full rounded-[12px] px-4 py-2 text-[12px] font-semibold"
                     style={{
@@ -144,11 +146,13 @@ export function PrivateAppointments() {
                   >
                     See All Doctors
                   </Button>
+                  </Link>
                 </div>
               </div>
 
               {/* Bottom big CTA */}
               <div className="pt-[620px] lg:pt-[540px]">
+                <Link href="/doctors">
                 <Button
                   variant="cta"
                   size="lg"
@@ -156,6 +160,7 @@ export function PrivateAppointments() {
                 >
                   BOOK YOUR APPOINTMENT
                 </Button>
+                </Link>
               </div>
             </div>
           </div>
