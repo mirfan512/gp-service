@@ -1,4 +1,7 @@
+
+
 @import "../styles/theme.css";
+
 
 /* Base styles */
 html,
@@ -78,7 +81,7 @@ img {
   pointer-events: none;
 
   /* right diagonal band */
-  clip-path: polygon(72% 0, 100% 0, 100% 100%, 86% 100%);
+  clip-path: polygon(72% 0, 100% 0, 100% 100%, 36% 100%);
   background: rgba(255, 255, 255, 0.18);
   z-index: 1;
 }
@@ -89,8 +92,8 @@ img {
   position: absolute;
   right: 0;
   bottom: 0;
-  width: 340px;     /* tweak if needed */
-  height: 120px;    /* tweak if needed */
+  width: 640px;     /* tweak if needed */
+  height: 310px;    /* tweak if needed */
 
   /* White wedge cut */
   background: var(--c-bg);
@@ -102,4 +105,64 @@ img {
 .hero-inner {
   position: relative;
   z-index: 3;
+}
+
+
+
+
+/* Figma-like hero with bottom-right white cut + subtle diagonal tint */
+.hero-figma {
+  position: relative;
+  overflow: hidden;
+}
+
+/* subtle diagonal tint overlay (like your figma soft panel) */
+.hero-figma::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.12);
+  clip-path: polygon(72% 0, 100% 0, 100% 100%, 86% 100%);
+}
+
+/* ✅ actual CUT OUT (white triangle) bottom-right */
+.hero-figma::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 38%;
+  height: 56%;
+  pointer-events: none;
+  background: var(--c-bg); /* must match page background */
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+/* ensures hero content stays above overlays */
+.hero-figma > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+.footer-diagonal {
+  position: relative;
+  overflow: hidden;
+}
+
+/* subtle diagonal highlight like Figma */
+.footer-diagonal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.12);
+  clip-path: polygon(65% 0, 100% 0, 100% 100%, 82% 100%);
+}
+
+/* keep footer content above overlay */
+.footer-diagonal > * {
+  position: relative;
+  z-index: 1;
 }

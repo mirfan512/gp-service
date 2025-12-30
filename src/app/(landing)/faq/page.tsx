@@ -1,4 +1,5 @@
 import { FaqAccordion } from "@/src/components/landing/FaqAccordion";
+import { FigmaHero } from "@/src/components/layout/Hero";
 import Image from "next/image";
 
 
@@ -6,28 +7,15 @@ export default function FAQPage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative hero-gradient hero-diagonal">
-        <div className="mx-auto max-w-[1440px] px-6 lg:px-12 hero-inner">
-          <div className="relative min-h-[240px] pt-[72px] pb-[56px] lg:min-h-[260px]">
-            <h1 className="max-w-[980px] text-white font-extrabold leading-[1.05] text-[44px] lg:text-[56px]">
-              Online GP Services – Frequently
-              <br />
-              Asked Questions (FAQ)
-            </h1>
-
-            <div className="absolute right-6 top-[84px] lg:right-12 lg:top-[84px]">
-              <Image
-                src="/icons/Greenbackgroundlogo1.svg"
-                alt="Online GP Services"
-                width={110}
-                height={110}
-                className="drop-shadow-lg"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
+  <FigmaHero
+  title={
+    <>
+      Online GP Services – Frequently
+      <br />
+      Asked Questions (FAQ)
+    </>
+  }
+/>
 
       {/* CONTENT */}
       <main className="bg-[var(--c-bg)]">

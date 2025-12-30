@@ -12,7 +12,13 @@ const navLinks = [
 
 export function Footer() {
   return (
-    <footer className="footer-gradient footer-diagonal text-white">
+      <footer
+      className="footer-gradient footer-diagonal w-full text-white"
+      style={{
+        background:
+          "linear-gradient(90deg, var(--c-hero-start) 0%, var(--c-hero-end) 100%)",
+      }}
+    >
       <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
         <div className="relative py-10 lg:py-12">
 

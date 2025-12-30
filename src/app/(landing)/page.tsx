@@ -6,7 +6,7 @@ import Image from "next/image";
 export default function HomePage() {
   return (
     <>
-      {/* ✅ HERO (Figma cut + overlay) */}
+     
       <section className="relative hero-gradient hero-diagonal">
         <div className="mx-auto max-w-[1440px] px-6 lg:px-12 hero-inner">
           <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[560px] pt-[72px] pb-[56px] lg:min-h-[600px] lg:pt-[88px] lg:pb-[64px]">

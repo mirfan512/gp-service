@@ -34,7 +34,7 @@ html.light {
   --c-surface: #f6f6f4;
   --c-surface-2: #ffffff;
   --c-text: #1f1f1f;
-  --c-text-muted: #6f6f6f;
+  --c-text-muted: #A3B094;
   --c-border: #dedede;
 
   --c-hero-start: #5b7553;
@@ -52,7 +52,7 @@ html.light {
 }
 
 /* Manual Dark toggle (html.dark) */
-html.dark {
+html.light {
   --c-bg: #0b0f0c;
   --c-surface: #101612;
   --c-surface-2: #0f140f;
@@ -82,6 +82,7 @@ html.dark {
     --c-surface-2: #0f140f;
     --c-text: #e9efe9;
     --c-text-muted: #b4beb4;
+    --c-text-black:#606060
     --c-border: rgb(255 255 255 / 0.12);
 
     --c-hero-start: #2d3b2a;
