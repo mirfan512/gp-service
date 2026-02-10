@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Inter:ital,wght@0,200;1,200&display=swap');
 @import "tailwindcss";
 
 /* Tailwind tokens */
@@ -10,7 +11,22 @@
   --color-surface-2: var(--c-surface-2);
   --color-text: var(--c-text);
   --color-text-muted: var(--c-text-muted);
-  --color-border: var(--c-border);
+  /* Fonts */
+  --font-primary: var(--ff-primary);
+  --font-secondary: var(--ff-secondary);
+  --font-inter: var(--ff-inter);
+
+  /* Wegovy specific tokens */
+  --color-wegovy-brown: #A45958;
+  --color-wegovy-red: rgba(161, 51, 51, 0.87);
+  --color-wegovy-deep-red: #834143;
+  --color-wegovy-red-2: var(--c-wegovy-red-2);
+  --color-wegovy-red-3: var(--c-wegovy-red-3);
+
+  /* Mounjaro specific tokens */
+  --color-mounjaro-green: #5B7553;
+  --color-mounjaro-light: #A3B094;
+  --color-mounjaro-tan: #DBC8C8;
 
   --radius-sm: 10px;
   --radius-md: 16px;
@@ -24,7 +40,10 @@
 /* Light mode defaults (Figma) */
 :root,
 html.light {
-  --ff: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --ff-primary: "Urbanist", sans-serif;
+  --ff-secondary: "Montserrat", sans-serif;
+  --ff-inter: "Inter", sans-serif;
+  --ff: var(--ff-primary);
   --fs-base: 16px;
 
   --c-primary: #a3b094;
@@ -42,6 +61,20 @@ html.light {
 
   --c-cta-btn: #2e5f6e;
 
+  /* Wegovy page colors */
+  --c-wegovy-card-bg: #A3B094;
+  --c-wegovy-card-border: rgba(255, 255, 255, 0.35);
+  --c-wegovy-text-primary: #1f1f1f;
+  --c-wegovy-text-secondary: #606060;
+  --c-wegovy-accent: #5b7553;
+  
+  /* New Wegovy Colors */
+  --c-wegovy-brown: #A45958;
+  --c-wegovy-red: rgba(161, 51, 51, 0.87);
+  --c-wegovy-deep-red: #834143;
+  --c-wegovy-red-2: #A13333;
+  --c-wegovy-red-3: #A13333DE;
+
   /* NAV tokens must be here */
   --c-nav-bg: #ffffff;
   --c-nav-border: #e6e6e0;
@@ -52,7 +85,7 @@ html.light {
 }
 
 /* Manual Dark toggle (html.dark) */
-html.light {
+html.dark {
   --c-bg: #0b0f0c;
   --c-surface: #101612;
   --c-surface-2: #0f140f;
@@ -65,7 +98,7 @@ html.light {
 
   --c-cta-btn: #2e5f6e;
 
-  /* Dark nav tokens (optional) */
+
   --c-nav-bg: #0b0f0c;
   --c-nav-border: rgb(255 255 255 / 0.12);
   --c-nav-active: #a3b094;
@@ -100,4 +133,8 @@ html.light {
 /* Figma hero gradient utility */
 .hero-gradient {
   background: linear-gradient(180deg, var(--c-hero-start) 0%, var(--c-hero-end) 100%);
+}
+
+.hero-mounjaro {
+  background: linear-gradient(180deg, #5B7553 0%, #A3B094 100%) !important;
 }

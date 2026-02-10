@@ -1,9 +1,6 @@
-
-
 @import "../styles/theme.css";
 
 
-/* Base styles */
 html,
 body {
   height: 100%;
@@ -41,7 +38,6 @@ a:hover {
   opacity: 0.8;
 }
 
-/* Remove default button styles */
 button {
   font-family: inherit;
   cursor: pointer;
