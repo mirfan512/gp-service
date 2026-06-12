@@ -1,15 +1,31 @@
+"use client";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Auth Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12" style={{ background: "var(--c-bg)" }}>
         <div className="w-full max-w-[520px]">
+          {/* Back Button */}
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-2 mb-8 text-[14px] font-medium transition-colors hover:opacity-80"
+            style={{ color: "var(--c-text-muted)" }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Back
+          </button>
+
           {/* Logo */}
           <div className="mb-12">
             <h2 className="text-[24px] font-semibold" style={{ color: "var(--c-text-muted)" }}>
@@ -23,7 +39,7 @@ export default function AuthLayout({
       </div>
 
       {/* Right Side - Hero Illustration */}
-      <div 
+      <div
         className="hidden lg:flex lg:w-1/2 items-center justify-center p-12"
         style={{
           background: "linear-gradient(180deg, #6B8469 0%, #A8987D 100%)",
@@ -31,7 +47,7 @@ export default function AuthLayout({
       >
         <div className="relative w-full max-w-[600px]">
           {/* Decorative blob background */}
-          <div 
+          <div
             className="absolute inset-0 opacity-30"
             style={{
               background: "radial-gradient(ellipse at center, rgba(255, 255, 255, 0.2) 0%, transparent 70%)",
@@ -52,7 +68,10 @@ export default function AuthLayout({
 
             {/* Pricing Badge */}
             <div className="mt-8 space-y-4">
-              <h3 className="text-[32px] font-bold text-white">
+              <h3
+                className="text-[32px] font-bold text-[var(--c-brand-magenta)]"
+                style={{ textShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)" }}
+              >
                 Start for £49
               </h3>
               <h2 className="text-[42px] font-bold text-white leading-tight">

@@ -2,13 +2,25 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useRegisterMutation } from "@/src/store/services/authApi";
+import { useAppDispatch } from "@/src/store/hooks";
+import { setCredentials } from "@/src/store/slices/authSlice";
+import { useToast } from "@/src/components/ui/Toast";
+import { getErrorMessage } from "@/src/store/services/api";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { showToast } = useToast();
+  const [register, { isLoading }] = useRegisterMutation();
+
   const [registerMethod, setRegisterMethod] = useState<"phone" | "email">("phone");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     phoneNumber: "",
     email: "",
     password: "",
@@ -17,6 +29,99 @@ export default function RegisterPage() {
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.firstName.trim()) {
+      showToast("Please enter your first name", "error");
+      return;
+    }
+
+    if (!formData.lastName.trim()) {
+      showToast("Please enter your last name", "error");
+      return;
+    }
+
+    if (registerMethod === "email" && !formData.email.trim()) {
+      showToast("Please enter your email", "error");
+      return;
+    }
+
+    if (registerMethod === "phone" && !formData.phoneNumber.trim()) {
+      showToast("Please enter your phone number", "error");
+      return;
+    }
+
+    if (!formData.password) {
+      showToast("Please enter a password", "error");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      showToast("Password must be at least 6 characters long", "error");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      showToast("Passwords do not match", "error");
+      return;
+    }
+
+    const termsCheckbox = document.getElementById("terms") as HTMLInputElement;
+    if (termsCheckbox && !termsCheckbox.checked) {
+      showToast("You must agree to the Terms & Conditions and Privacy Policy", "error");
+      return;
+    }
+
+    const firstName = formData.firstName.trim();
+    const lastName = formData.lastName.trim();
+
+    let phone = undefined;
+    if (registerMethod === "phone") {
+      let rawPhone = formData.phoneNumber.trim();
+      if (rawPhone.startsWith("+")) {
+        phone = rawPhone;
+      } else if (rawPhone.startsWith("44")) {
+        phone = `+${rawPhone}`;
+      } else {
+        if (rawPhone.startsWith("0")) {
+          rawPhone = rawPhone.substring(1);
+        }
+        phone = `+44${rawPhone}`;
+      }
+    }
+
+    try {
+      const response = await register({
+        firstName,
+        lastName,
+        email: registerMethod === "email" ? formData.email.trim() : undefined,
+        phone,
+        password: formData.password,
+      }).unwrap();
+
+      if (response.success) {
+        showToast("Account created successfully!", "success");
+        if (response.data && response.data.token) {
+          dispatch(
+            setCredentials({
+              user: response.data.user,
+              token: response.data.token,
+            })
+          );
+          router.push("/patient-registration");
+        } else {
+          router.push("/login");
+        }
+      } else {
+        showToast(response.message || "Failed to register.", "error");
+      }
+    } catch (err: any) {
+      const backendMsg = getErrorMessage(err);
+      showToast(backendMsg, "error");
+    }
   };
 
   return (
@@ -34,6 +139,7 @@ export default function RegisterPage() {
       {/* Register Method Toggle */}
       <div className="flex gap-3 mb-8">
         <button
+          type="button"
           onClick={() => setRegisterMethod("phone")}
           className="flex-1 py-3 text-[15px] font-semibold transition-all duration-200 rounded-xl"
           style={{
@@ -41,10 +147,12 @@ export default function RegisterPage() {
             color: registerMethod === "phone" ? "#ffffff" : "var(--c-text-muted)",
             border: registerMethod === "phone" ? "none" : "1.5px solid var(--c-border)",
           }}
+          disabled={isLoading}
         >
           Phone
         </button>
         <button
+          type="button"
           onClick={() => setRegisterMethod("email")}
           className="flex-1 py-3 text-[15px] font-semibold transition-all duration-200 rounded-xl"
           style={{
@@ -52,30 +160,54 @@ export default function RegisterPage() {
             color: registerMethod === "email" ? "#ffffff" : "var(--c-text-muted)",
             border: registerMethod === "email" ? "none" : "1.5px solid var(--c-border)",
           }}
+          disabled={isLoading}
         >
           Email
         </button>
       </div>
 
       {/* Form */}
-      <form className="space-y-5">
-        {/* Full Name */}
-        <div>
-          <label className="block text-[15px] font-medium mb-2" style={{ color: "var(--c-text)" }}>
-            Full Name
-          </label>
-          <input
-            type="text"
-            value={formData.fullName}
-            onChange={(e) => handleChange("fullName", e.target.value)}
-            className="w-full px-4 py-3 text-[15px] rounded-xl transition-all duration-200"
-            style={{
-              background: "var(--c-surface)",
-              border: "1.5px solid var(--c-border)",
-              color: "var(--c-text)",
-            }}
-            placeholder="John Doe"
-          />
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Name Fields */}
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <label className="block text-[15px] font-medium mb-2" style={{ color: "var(--c-text)" }}>
+              First Name
+            </label>
+            <input
+              type="text"
+              value={formData.firstName}
+              onChange={(e) => handleChange("firstName", e.target.value)}
+              className="w-full px-4 py-3 text-[15px] rounded-xl transition-all duration-200"
+              style={{
+                background: "var(--c-surface)",
+                border: "1.5px solid var(--c-border)",
+                color: "var(--c-text)",
+              }}
+              placeholder="John"
+              disabled={isLoading}
+              required
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block text-[15px] font-medium mb-2" style={{ color: "var(--c-text)" }}>
+              Last Name
+            </label>
+            <input
+              type="text"
+              value={formData.lastName}
+              onChange={(e) => handleChange("lastName", e.target.value)}
+              className="w-full px-4 py-3 text-[15px] rounded-xl transition-all duration-200"
+              style={{
+                background: "var(--c-surface)",
+                border: "1.5px solid var(--c-border)",
+                color: "var(--c-text)",
+              }}
+              placeholder="Doe"
+              disabled={isLoading}
+              required
+            />
+          </div>
         </div>
 
         {/* Phone Number / Email */}
@@ -100,7 +232,9 @@ export default function RegisterPage() {
                   border: "1.5px solid var(--c-border)",
                   color: "var(--c-text)",
                 }}
-                placeholder=""
+                placeholder="7123456789"
+                disabled={isLoading}
+                required
               />
             </div>
           </div>
@@ -120,6 +254,8 @@ export default function RegisterPage() {
                 color: "var(--c-text)",
               }}
               placeholder="your@email.com"
+              disabled={isLoading}
+              required
             />
           </div>
         )}
@@ -141,11 +277,14 @@ export default function RegisterPage() {
                 color: "var(--c-text)",
               }}
               placeholder="••••••••"
+              disabled={isLoading}
+              required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 transition-opacity duration-200 hover:opacity-70"
+              disabled={isLoading}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" style={{ color: "var(--c-text-muted)" }}>
                 {showPassword ? (
@@ -175,11 +314,14 @@ export default function RegisterPage() {
                 color: "var(--c-text)",
               }}
               placeholder="••••••••"
+              disabled={isLoading}
+              required
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 transition-opacity duration-200 hover:opacity-70"
+              disabled={isLoading}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" style={{ color: "var(--c-text-muted)" }}>
                 {showConfirmPassword ? (
@@ -198,6 +340,8 @@ export default function RegisterPage() {
             type="checkbox"
             id="terms"
             className="mt-1 w-4 h-4 rounded accent-[#A3B094]"
+            disabled={isLoading}
+            required
           />
           <label htmlFor="terms" className="text-[13px]" style={{ color: "var(--c-text-muted)" }}>
             I agree to the{" "}
@@ -214,12 +358,23 @@ export default function RegisterPage() {
         {/* Register Button */}
         <button
           type="submit"
-          className="w-full py-3.5 text-[16px] font-semibold text-white rounded-xl transition-all duration-200 hover:opacity-90 hover:scale-[1.01]"
+          className="w-full py-3.5 text-[16px] font-semibold text-white rounded-xl transition-all duration-200 hover:opacity-90 hover:scale-[1.01] flex items-center justify-center gap-2"
           style={{
             background: "#A3B094",
           }}
+          disabled={isLoading}
         >
-          Create Account
+          {isLoading ? (
+            <>
+              <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Creating Account...
+            </>
+          ) : (
+            "Create Account"
+          )}
         </button>
 
         {/* Login Link */}

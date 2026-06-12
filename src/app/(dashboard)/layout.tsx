@@ -1,8 +1,16 @@
 
+import { Footer } from "@/src/components/layout/Footer";
+import { Navbar } from "@/src/components/layout/Navbar";
 import type { ReactNode } from "react";
-import { DashboardShell } from "./dashboard/_components/DashboardShell";
+
 
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  return <DashboardShell>{children}</DashboardShell>;
+  return (
+    <div className="min-h-screen">
+      <Navbar />
+      {children}
+      <Footer />
+    </div>
+  );
 }

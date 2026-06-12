@@ -5,6 +5,7 @@ import { Button } from "../ui/Button";
 type ServiceCard = {
   title: string;
   icon: string; // /icons/...
+  href: string;
 };
 
 type CategoryCard = {
@@ -13,10 +14,10 @@ type CategoryCard = {
 };
 
 const servicesRight: ServiceCard[] = [
-  { title: "Consultation with\na Doctor", icon: "/icons/g1.svg" },
-  { title: "Prescriptions", icon: "/icons/g3.svg" },
-  { title: "FIT / SICK notes", icon: "/icons/g4.svg" },
-  { title: "Referral letters", icon: "/icons/g5.svg" },
+  { title: "Kate - AI Therapist", icon: "/icons/g2.svg", href: "/ai-therapist" },
+  { title: "Prescriptions", icon: "/icons/g3.svg", href: "/prescription" },
+  { title: "FIT / SICK notes", icon: "/icons/g4.svg", href: "/fit-note" },
+  { title: "Referral letters", icon: "/icons/g5.svg", href: "#" },
 ];
 
 const categories: CategoryCard[] = [
@@ -32,7 +33,7 @@ const categories: CategoryCard[] = [
 export function ServicesAndCategories() {
   return (
     <section className="py-14">
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
+      <div className="mx-auto max-w-[1950px] px-6 lg:pr-12 lg:pl-32 xl:pl-[144px] 2xl:pl-[168px]">
         {/* Outer container (the big rounded panel in Figma) */}
         <div
           className="rounded-[22px] border bg-white px-6 py-7 lg:px-10 lg:py-9"
@@ -43,130 +44,121 @@ export function ServicesAndCategories() {
           }}
         >
           {/* Our Services */}
-          <div className="mb-8">
+          <div className="mb-8 pl-8 lg:pl-[12px]">
             <h2
-              className="text-[28px] font-semibold"
-              style={{ color: "#A3B094" }}
+              className="font-bold"
+              style={{
+                fontSize: "36px",
+                lineHeight: "68px",
+                letterSpacing: "0.02em",
+                color: "#A3B094",
+              }}
             >
               Our Services
             </h2>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
-            {/* LEFT big card */}
-            <div
-              className="relative overflow-hidden rounded-[18px] border"
-              style={{
-                background: "#A3B094",
-                borderColor: "rgba(255,255,255,0.35)",
-                boxShadow: "0 8px 18px rgba(0,0,0,0.08)",
-              }}
-            >
-              <div className="flex h-full min-h-[150px] items-center justify-between gap-6 px-6 py-6 lg:min-h-[170px]">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <Image
-                      src="/icons/g1.svg"
-                      alt=""
-                      width={28}
-                      height={28}
-                    />
-                  </div>
+          <div className="grid gap-6 lg:grid-cols-2 lg:items-stretch">
+            {/* LEFT Column */}
+            <div className="flex flex-col gap-6 ">
 
-                  <p className="mt-4 text-[18px] font-semibold leading-tight text-white">
-                    Remote <br /> GP consultations
-                  </p>
-                </div>
-
-                {/* Right illustration inside the card */}
-                <div className="flex shrink-0">
-                  <Image
-                    src="/icons/s1.svg"
-                    alt="Remote consultation"
-                     width={200}
-                      height={200}
-                    className="object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* RIGHT 2x2 grid cards */}
-            <div className="grid gap-4 sm:grid-cols-2">
-              {servicesRight.map((s) => (
-                <div
-                  key={s.title}
-                  className="rounded-[16px] border px-5 py-5"
-                  style={{
-                    background: "#A3B094",
-                    borderColor: "rgba(255,255,255,0.35)",
-                    boxShadow: "0 6px 14px rgba(0,0,0,0.08)",
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <Image src={s.icon} alt="" width={26} height={26} />
-                    <p className="text-[14px] font-semibold leading-snug text-white whitespace-pre-line">
-                      {s.title}
-                    </p>
-                  </div>
-                </div>
-              ))}
-
-              {/* long “Weight Loss injections” card */}
-              <div
-                className="sm:col-span-2 rounded-[16px] border px-5 py-4 text-center"
+              {/* Remote GP Card */}
+              <Link
+                href="/doctors"
+                className="relative flex flex-1 flex-col justify-between overflow-hidden rounded-[18px] border transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-98 cursor-pointer"
                 style={{
                   background: "#A3B094",
                   borderColor: "rgba(255,255,255,0.35)",
-                  boxShadow: "0 6px 14px rgba(0,0,0,0.08)",
+                  boxShadow: "0px 5px 4px rgba(0, 0, 0, 0.25)",
+                  height: "256px",
+                  minHeight: "256px",
                 }}
               >
-                <p className="text-[14px] font-semibold text-white">
-                  Weight Loss Injections
-                </p>
-              </div>
-            </div>
-          </div>
+                {/* Icon Top Left */}
+                <div className="absolute left-[40px] top-[70px]">
+                  <Image src="/icons/g1.svg" alt="" width={48} height={48} />
+                </div>
 
-          {/* Categories */}
-          <div className="mt-10">
-            <div className="flex items-end justify-between">
-              <h3
-                className="text-[26px] font-semibold"
-                style={{ color: "#A3B094" }}
-              >
-                Categories
-              </h3>
+                {/* Content Details */}
+                <div className="absolute bottom-[64px] left-[30px] z-10">
+                  <p className="max-w-[180px] text-[22px] font-semibold leading-tight text-white">
+                    Remote GP
+                    <br /> Consultations
+                  </p>
+                </div>
 
+                {/* Illustration Right */}
+                <div className="absolute right-[70px] top-[12px]">
+                  <Image
+                    src="/icons/s1.svg"
+                    alt="Remote consultation"
+                    width={232}
+                    height={232}
+                    className="object-contain"
+                  />
+                </div>
+              </Link>
+
+              {/* Blood Tests Card */}
               <Link
-                href="/categories"
-                className="text-[13px] font-semibold hover:opacity-80"
-                style={{ color: "#A3B094" }}
+                href="/blood-tests"
+                className="rounded-[16px] border px-5 py-6 text-center transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-98 cursor-pointer"
+                style={{
+                  background: "#A3B094",
+                  borderColor: "rgba(255,255,255,0.35)",
+                  boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+                }}
               >
-                See All
+                <p className="text-[20px] font-medium text-white">
+                 Blood Tests
+                </p>
               </Link>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-7">
-              {categories.map((c) => (
-                <Button
-                  key={c.title}
-                  className="flex flex-col items-center justify-center gap-2 rounded-[14px] border px-4 py-5 transition-opacity hover:opacity-90"
-                  style={{
-                    background: "#A3B094",
-                    borderColor: "rgba(255,255,255,0.35)",
-                    boxShadow: "0 6px 14px rgba(0,0,0,0.08)",
-                  }}
-                  type="button"
-                >
-                  <Image src={c.icon} alt="" width={26} height={26} />
-                  <span className="text-[13px] font-semibold text-white">
-                    {c.title}
-                  </span>
-                </Button>
-              ))}
+            {/* RIGHT Column */}
+            <div className="flex flex-col gap-6">
+              {/* 2x2 Grid */}
+              <div className="grid flex-1 gap-4 sm:grid-cols-2">
+                {servicesRight.map((s) => (
+                  <Link
+                    href={s.href}
+                    key={s.title}
+                    className="flex flex-col justify-center rounded-[16px] border px-5 py-5 transition-all duration-200 hover:scale-[1.03] hover:shadow-lg active:scale-98 cursor-pointer"
+                    style={{
+                      background: "#A3B094",
+                      borderColor: "rgba(255,255,255,0.35)",
+                      boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+                      minHeight: "117px",
+                    }}
+                  >
+                    <div className="flex items-center justify-center gap-4">
+                      <Image src={s.icon} alt="" width={32} height={32} />
+                      <p className="text-[20px] font-medium leading-snug text-white whitespace-pre-line text-center">
+                        {s.title}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Weight Loss Injections Card */}
+              <Link
+                href="/weight-loss"
+                className="rounded-[16px] border px-5 py-6 text-center transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-98 cursor-pointer"
+                style={{
+                  background: "#A3B094",
+                  borderColor: "rgba(255,255,255,0.35)",
+                  boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+                }}
+              >
+                <p className="text-[20px] font-medium text-white">
+                  Weight Loss Injections | NAD+ Injections 
+                </p>
+              </Link>
             </div>
           </div>
+
+        
         </div>
       </div>
     </section>

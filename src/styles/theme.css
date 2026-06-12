@@ -1,16 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Inter:ital,wght@0,200;0,400;0,500;0,700;1,200&family=Krub:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap');
 @import "tailwindcss";
 
 /* Tailwind tokens */
 @theme {
   --color-primary: var(--c-primary);
   --color-primary-600: var(--c-primary-600);
+  --color-primary-light: var(--c-primary-light);
 
   --color-bg: var(--c-bg);
   --color-surface: var(--c-surface);
   --color-surface-2: var(--c-surface-2);
   --color-text: var(--c-text);
+  --color-text-secondary: var(--c-text-secondary);
   --color-text-muted: var(--c-text-muted);
+  --color-text-gray: var(--c-text-gray);
+  --color-text-black: var(--c-text-black);
   --color-border: var(--c-border);
+
+  --color-border-subtle: rgba(0, 0, 0, 0.18);
+  --color-border-glass: rgba(0, 0, 0, 0.25);
+  --color-border-icon: rgba(0, 0, 0, 0.22);
+  --color-surface-glass: rgba(255, 255, 255, 0.35);
+  --color-cta: var(--c-cta-btn);
+  --color-nav-bg: var(--c-nav-bg);
+  --color-banner-bg: rgba(94, 119, 85, 0.26);
+  --color-store-btn: #1f2937;
+  /* Fonts */
+  --font-primary: var(--ff-primary);
+  --font-secondary: var(--ff-secondary);
+  --font-inter: var(--ff-inter);
+  --font-krub: var(--ff-krub);
+
+  /* Wegovy specific tokens */
+  --color-wegovy-brown: #A45958;
+  --color-wegovy-red: rgba(161, 51, 51, 0.87);
+  --color-wegovy-deep-red: #834143;
+  --color-wegovy-red-2: var(--c-wegovy-red-2);
+  --color-wegovy-red-3: var(--c-wegovy-red-3);
+
+  /* Mounjaro specific tokens */
+  --color-mounjaro-green: #5B7553;
+  --color-mounjaro-light: #A3B094;
+  --color-mounjaro-tan: #DBC8C8;
+
+  /* NAD+ specific tokens */
+  --color-nad-accent: #EDB984;
+  --color-nad-accent-soft: #FDF6F1;
+  --color-nad-accent-border: #F9E9D8;
+  --color-nad-accent-dark: #A46E4A;
+
+  /* Consultant Portal Tokens */
+  --color-portal-header: #8E9C85;
+  --color-portal-bg: #EAE6DF;
+  --color-portal-card: #FFFFFF;
+  --color-portal-tab-active: #C4CCC3;
+  --color-portal-tab-inactive: #FFFFFF;
+  --color-portal-accent: #9CAD94;
+  --color-portal-action-primary: #A3B094;
+  --color-portal-action-secondary: #C7CFC5;
+  --color-portal-button-muted: #D6C4B0;
+  --color-portal-btn-primary: #B6B098;
+  --color-portal-tab-inactive-bg: var(--c-portal-tab-inactive-bg);
+  --color-portal-book-btn: var(--c-portal-book-btn);
+
+  /* Brand / App Colors */
+  --color-brand-pink: #FF2D8C;
+  --color-brand-pink-soft: #FFF5F8;
+  --color-brand-pink-border: #FFD9E8;
 
   --radius-sm: 10px;
   --radius-md: 16px;
@@ -19,22 +75,37 @@
   --shadow-soft: 0 10px 30px rgb(0 0 0 / 0.08);
   --shadow-elev: 0px 6px 10px 4px rgb(0 0 0 / 0.1),
     0px 2px 3px rgb(0 0 0 / 0.16);
+
+  --color-brand-magenta: var(--c-brand-magenta);
+  --color-btn-secondary: var(--c-btn-secondary);
+  --color-button-submit: var(--c-button-submit);
+
+  --color-portal-tab-inactive-bg: #A3B09482;
+
+  --c-faq-bg: #EEEEEE;
 }
 
 /* Light mode defaults (Figma) */
 :root,
 html.light {
-  --ff: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --ff-primary: "Urbanist", sans-serif;
+  --ff-secondary: "Montserrat", sans-serif;
+  --ff-inter: "Inter", sans-serif;
+  --ff-krub: "Krub", sans-serif;
+  --ff: var(--ff-primary);
   --fs-base: 16px;
 
   --c-primary: #a3b094;
   --c-primary-600: #5b7553;
+  --c-primary-light: #bac3af;
 
   --c-bg: #ffffff;
   --c-surface: #f6f6f4;
   --c-surface-2: #ffffff;
   --c-text: #1f1f1f;
+  --c-text-secondary: #666C89;
   --c-text-muted: #A3B094;
+  --c-text-gray: #8E8E8E;
   --c-border: #dedede;
 
   --c-hero-start: #5b7553;
@@ -42,17 +113,49 @@ html.light {
 
   --c-cta-btn: #2e5f6e;
 
+  /* Wegovy page colors */
+  --c-wegovy-card-bg: #A3B094;
+  --c-wegovy-card-border: rgba(255, 255, 255, 0.35);
+  --c-wegovy-text-primary: #1f1f1f;
+  --c-wegovy-text-secondary: #8E8E8E;
+  --c-wegovy-accent: #5b7553;
+
+  /* New Wegovy Colors */
+  --c-wegovy-brown: #A45958;
+  --c-wegovy-red: rgba(161, 51, 51, 0.87);
+  --c-wegovy-deep-red: #834143;
+  --c-wegovy-red-2: #A13333;
+  --c-wegovy-red-3: #A13333DE;
+
   /* NAV tokens must be here */
   --c-nav-bg: #ffffff;
   --c-nav-border: #e6e6e0;
   --c-nav-active: #a3b094;
   --c-nav-muted: #1f1f1f;
 
+  --c-brand-pink: #FF2D8C;
+  --c-brand-pink-soft: #FFF5F8;
+  --c-brand-magenta: #EA2E83;
+  --c-btn-secondary: #A3B094;
+  --c-btn-tertiary: #E9ECF5;
+  --c-button-submit: #AFAB93;
+
+  --c-portal-tab-inactive-bg: #A3B09482;
+  --c-portal-book-btn: #39657D;
+
+  --c-nad-accent: #EDB984;
+  --c-nad-accent-soft: #FDF6F1;
+  --c-nad-accent-border: #F9E9D8;
+  --c-nad-accent-dark: #A46E4A;
+
+  --c-text-black: #1f1f1f;
+
+  --c-faq-bg: #EEEEEE;
   color-scheme: light;
 }
 
 /* Manual Dark toggle (html.dark) */
-html.light {
+html.dark {
   --c-bg: #0b0f0c;
   --c-surface: #101612;
   --c-surface-2: #0f140f;
@@ -65,14 +168,19 @@ html.light {
 
   --c-cta-btn: #2e5f6e;
 
-  /* Dark nav tokens (optional) */
+
   --c-nav-bg: #0b0f0c;
   --c-nav-border: rgb(255 255 255 / 0.12);
   --c-nav-active: #a3b094;
   --c-nav-muted: #e9efe9;
 
+  --c-nav-active: #a3b094;
+  --c-nav-muted: #e9efe9;
+
   color-scheme: dark;
 }
+
+
 
 /* System dark preference (only if user hasn't set .dark or .light) */
 @media (prefers-color-scheme: dark) {
@@ -82,7 +190,7 @@ html.light {
     --c-surface-2: #0f140f;
     --c-text: #e9efe9;
     --c-text-muted: #b4beb4;
-    --c-text-black:#606060
+    --c-text-black: #606060;
     --c-border: rgb(255 255 255 / 0.12);
 
     --c-hero-start: #2d3b2a;
@@ -100,4 +208,36 @@ html.light {
 /* Figma hero gradient utility */
 .hero-gradient {
   background: linear-gradient(180deg, var(--c-hero-start) 0%, var(--c-hero-end) 100%);
+}
+
+.hero-linear-gradient {
+  background: linear-gradient(90deg, #5B7553 0%, #D6C4B0 100%);
+}
+
+.hero-mounjaro {
+  background: linear-gradient(180deg, #5B7553 0%, #A3B094 100%) !important;
+}
+
+.hero-nad {
+  background: linear-gradient(180deg, #8EA181 0%, #BCC3B3 100%) !important;
+}
+
+.hero-nad-bg {
+  background: linear-gradient(180deg, #8EA181 0%, #BCC3B3 100%) !important;
+}
+
+.text-hero-bold {
+  font-family: var(--ff-inter);
+  font-weight: 700;
+  font-size: 44px;
+  /* Mobile base */
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 1024px) {
+  .text-hero-bold {
+    font-size: 64px;
+    line-height: 1.2;
+  }
 }

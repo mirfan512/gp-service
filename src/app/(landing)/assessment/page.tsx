@@ -1,428 +1,429 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { FigmaHero } from "@/src/components/layout/Hero";
-import Image from "next/image";
-import * as React from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Cookies from "js-cookie";
+import { FormDivider } from "@/src/components/ui/form";
+import { useAssessmentForm } from "@/src/lib/hooks/useAssessmentForm";
+import { PatientDetailsSection } from "@/src/components/features/assessment/PatientDetailsSection";
+import { MedicalHistorySection } from "@/src/components/features/assessment/MedicalHistorySection";
+import { MentalHealthSection } from "@/src/components/features/assessment/MentalHealthSection";
+import { SafetyScreeningSection } from "@/src/components/features/assessment/SafetyScreeningSection";
+import { MedicationSection } from "@/src/components/features/assessment/MedicationSection";
+import { LifestyleSection } from "@/src/components/features/assessment/LifestyleSection";
+import { SymptomsSection } from "@/src/components/features/assessment/SymptomsSection";
+import { PhotoUploadSection } from "@/src/components/features/assessment/PhotoUploadSection";
+import { PatientDeclarationSection } from "@/src/components/features/assessment/PatientDeclarationSection";
+import { SimpleHero } from "@/src/components/layout/SimpleHero";
+import { useToast } from "@/src/components/ui/Toast";
+import { useGetPatientMeQuery, useUpdatePatientMeMutation } from "@/src/store/services/patientsApi";
+import { useSubmitWeightLossAssessmentMutation } from "@/src/store/services/assessmentsApi";
+import { useCreateCheckoutSessionMutation } from "@/src/store/services/paymentsApi";
+import { getErrorMessage } from "@/src/store/services/api";
+import { Modal } from "@/src/components/ui/Modal";
 
-type YesNo = "yes" | "no" | "";
+function WeightLossAssessmentContent() {
+  const [errorModalMessage, setErrorModalMessage] = useState<string | null>(null);
+  const { states, setters } = useAssessmentForm();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { showToast } = useToast();
+  const token = typeof window !== "undefined" ? Cookies.get("token") : undefined;
 
-function YesNoRow({
-  value,
-  onChange,
-}: {
-  value: YesNo;
-  onChange: (v: YesNo) => void;
-}) {
+  const treatment = searchParams.get("treatment") || "wegovy";
+  const dose = searchParams.get("dose") || undefined;
+
+  const { data: patientData } = useGetPatientMeQuery(undefined, {
+    skip: !token,
+  });
+
+  const [updatePatientMe, { isLoading: isUpdatingPatient }] = useUpdatePatientMeMutation();
+  const [submitAssessment, { isLoading: isSubmittingAssessment }] = useSubmitWeightLossAssessmentMutation();
+  const [createCheckoutSession, { isLoading: isCreatingCheckout }] = useCreateCheckoutSessionMutation();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = Cookies.get("token");
+      if (!token) {
+        showToast("Please log in to complete the medical questionnaire", "error");
+        router.push("/login?redirect=/assessment");
+      }
+    }
+  }, [router, showToast]);
+
+  // Pre-populate patient details
+  useEffect(() => {
+    if (patientData?.data) {
+      const patient = patientData.data;
+      if (patient.name || (patient.firstName && patient.lastName)) {
+        setters.setFullName(patient.name || `${patient.firstName || ""} ${patient.lastName || ""}`.trim());
+      }
+      if (patient.dob) setters.setDob(patient.dob);
+      if (patient.address) setters.setAddress(patient.address);
+      if (patient.city) setters.setPostcode(patient.city);
+      if (patient.email) setters.setEmail(patient.email);
+    }
+  }, [patientData, setters]);
+
+  const handleSubmit = async () => {
+    // Validation
+    if (!states.fullName) return showToast("Full Name is required", "error");
+    if (!states.dob) return showToast("Date of birth is required", "error");
+    if (!states.address) return showToast("Address is required", "error");
+    if (!states.postcode) return showToast("Postcode is required", "error");
+    if (!states.phoneNumber) return showToast("Phone number is required", "error");
+    if (!states.email) return showToast("Email is required", "error");
+
+    if (!states.height) return showToast("Height is required", "error");
+    if (!states.weight) return showToast("Weight is required", "error");
+    if (!states.qObesity) return showToast("Eligibility diagnosed obesity question must be answered", "error");
+
+    const conditions = [
+      states.cond1,
+      states.cond2,
+      states.cond3,
+      states.cond4,
+      states.cond5,
+      states.cond6,
+    ];
+    if (conditions.some((c) => c === "")) {
+      return showToast("Please answer all eligibility condition questions", "error");
+    }
+
+    if (!states.mh1 || !states.mh2) {
+      return showToast("Please answer all mental health screening questions", "error");
+    }
+
+    const contraindications = [states.c1, states.c2, states.c3, states.c4, states.c5];
+    if (contraindications.some((c) => c === "")) {
+      return showToast("Please answer all safety screening questions", "error");
+    }
+
+    if (!states.cm1 || !states.cm2) {
+      return showToast("Please answer all current medication questions", "error");
+    }
+
+    if (!states.ls1 || !states.ls2) {
+      return showToast("Please answer all lifestyle questions", "error");
+    }
+    if (states.ls2 === "yes" && !states.ls2Details) {
+      return showToast("Please describe your current diet and exercise plan", "error");
+    }
+
+    const redFlags = [states.rf1, states.rf2, states.rf3];
+    if (redFlags.some((c) => c === "")) {
+      return showToast("Please answer all symptoms (red flags) questions", "error");
+    }
+
+    if (!states.frontPhoto) return showToast("Front photo is required", "error");
+    if (!states.sidePhoto) return showToast("Side photo is required", "error");
+    if (!states.backPhoto) return showToast("Back photo is required", "error");
+
+    if (!states.check1 || !states.check2) {
+      return showToast("Please sign all declarations", "error");
+    }
+    if (!states.signature) return showToast("Signature is required", "error");
+    if (!states.date) return showToast("Date is required", "error");
+
+    try {
+      // Step A: Save patient personal details
+      const patientFormData = new FormData();
+      patientFormData.append("name", states.fullName);
+      patientFormData.append("dob", states.dob);
+      patientFormData.append("address", states.address);
+      patientFormData.append("city", states.postcode);
+      patientFormData.append("email", states.email);
+
+      await updatePatientMe(patientFormData).unwrap();
+
+      // Step B: Submit assessment
+      const assessmentFormData = new FormData();
+      assessmentFormData.append("treatment", treatment);
+
+      // Eligibility
+      assessmentFormData.append(
+        "eligibility",
+        JSON.stringify({
+          height: Number(states.height),
+          weight: Number(states.weight),
+          diagnosedObesity: states.qObesity === "yes",
+          conditions: {
+            type2Diabetes: states.cond1 === "yes",
+            hypertension: states.cond2 === "yes",
+            highCholesterol: states.cond3 === "yes",
+            sleepApnoea: states.cond4 === "yes",
+            pcos: states.cond5 === "yes",
+            cardiovascularDisease: states.cond6 === "yes",
+          },
+        })
+      );
+
+      // Mental Health
+      assessmentFormData.append(
+        "mentalHealthScreening",
+        JSON.stringify({
+          hasMentalHealthConditions: states.mh1 === "yes",
+          underTreatment: states.mh2 === "yes",
+        })
+      );
+
+      // Contraindications
+      assessmentFormData.append(
+        "contraindications",
+        JSON.stringify({
+          pregnantOrBreastfeeding: states.c1 === "yes",
+          historyOfPancreatitis: states.c2 === "yes",
+          familyHistoryOfThyroidCancerOrMEN2: states.c3 === "yes",
+          severeGiDisease: states.c4 === "yes",
+          glp1Allergy: states.c5 === "yes",
+        })
+      );
+
+      // Medications
+      assessmentFormData.append(
+        "currentMedications",
+        JSON.stringify({
+          takingInsulinOrSulfonylureas: states.cm1 === "yes",
+          takingWeightLossMeds: states.cm2 === "yes",
+        })
+      );
+
+      // Lifestyle
+      assessmentFormData.append(
+        "lifestyle",
+        JSON.stringify({
+          previousProgrammes: states.ls1 === "yes",
+          currentDietExercise: states.ls2 === "yes",
+          dietDetails: states.ls2Details || "",
+        })
+      );
+
+      // Red flags
+      assessmentFormData.append(
+        "redFlags",
+        JSON.stringify({
+          unexplainedAbdominalPain: states.rf1 === "yes",
+          persistentVomitingNausea: states.rf2 === "yes",
+          unexplainedWeightLoss: states.rf3 === "yes",
+        })
+      );
+
+      assessmentFormData.append("declarationSigned", "true");
+
+      // Photos
+      assessmentFormData.append("front", states.frontPhoto);
+      assessmentFormData.append("side", states.sidePhoto);
+      assessmentFormData.append("back", states.backPhoto);
+
+      const res = await submitAssessment(assessmentFormData).unwrap();
+      if (res.success) {
+        showToast("Assessment submitted successfully! Redirecting to checkout...", "success");
+        try {
+          const assessmentId = res.data?.id || res.data?.assessment?.id || res.data?._id;
+          const checkoutRes = await createCheckoutSession({
+            type: "one_off",
+            doseRequested: dose,
+            successUrl: `${window.location.origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: `${window.location.origin}/payment/cancel`,
+            assessmentId,
+          }).unwrap();
+          
+          const redirectUrl = checkoutRes.data?.url || checkoutRes.data?.session?.url;
+          if (checkoutRes.success && redirectUrl) {
+            window.location.href = redirectUrl;
+          } else {
+            showToast("Failed to initiate payment session", "error");
+            router.push("/patient-portal");
+          }
+        } catch (checkoutErr) {
+          showToast(getErrorMessage(checkoutErr), "error");
+          router.push("/patient-portal");
+        }
+      } else {
+        const msg = res.message || "Failed to submit assessment";
+        setErrorModalMessage(msg);
+      }
+    } catch (err) {
+      setErrorModalMessage(getErrorMessage(err));
+    }
+  };
+
   return (
-    <div className="ml-auto flex items-center gap-8">
-      <label className="flex items-center gap-2 text-[12px]" style={{ color: "var(--c-text-black)" }}>
-        <span>Yes</span>
-        <input
-          type="radio"
-          checked={value === "yes"}
-          onChange={() => onChange("yes")}
-          className="h-[14px] w-[14px]"
-        />
-      </label>
-
-      <label className="flex items-center gap-2 text-[12px]" style={{ color: "var(--c-text-black)" }}>
-        <span>No</span>
-        <input
-          type="radio"
-          checked={value === "no"}
-          onChange={() => onChange("no")}
-          className="h-[14px] w-[14px]"
-        />
-      </label>
-    </div>
-  );
-}
-
-function Field({
-  placeholder,
-  className = "",
-}: {
-  placeholder: string;
-  className?: string;
-}) {
-  return (
-    <input
-      placeholder={placeholder}
-      className={[
-        "h-[34px] w-full rounded-[6px] px-3 text-[12px] outline-none",
-        className,
-      ].join(" ")}
-      style={{
-        background: "transparent",
-        border: "1px solid rgba(0,0,0,0.18)",
-      }}
-    />
-  );
-}
-
-function TextArea({
-  placeholder,
-  rows = 3,
-}: {
-  placeholder: string;
-  rows?: number;
-}) {
-  return (
-    <textarea
-      rows={rows}
-      placeholder={placeholder}
-      className="w-full rounded-[6px] px-3 py-2 text-[12px] outline-none"
-      style={{
-        background: "transparent",
-        border: "1px solid rgba(0,0,0,0.18)",
-      }}
-    />
-  );
-}
-
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="text-center text-[14px] font-semibold" style={{ color: "var(--c-primary-600)" }}>
-      {children}
-    </div>
-  );
-}
-
-function Divider() {
-  return <div className="h-[18px]" />;
-}
-
-export default function WeightLossAssessmentPage() {
-  const [qObesity, setQObesity] = React.useState<YesNo>("");
-  const [mh1, setMh1] = React.useState<YesNo>("");
-  const [mh2, setMh2] = React.useState<YesNo>("");
-  const [c1, setC1] = React.useState<YesNo>("");
-  const [c2, setC2] = React.useState<YesNo>("");
-  const [c3, setC3] = React.useState<YesNo>("");
-  const [c4, setC4] = React.useState<YesNo>("");
-  const [c5, setC5] = React.useState<YesNo>("");
-  const [cm1, setCm1] = React.useState<YesNo>("");
-  const [cm2, setCm2] = React.useState<YesNo>("");
-  const [ls1, setLs1] = React.useState<YesNo>("");
-  const [ls2, setLs2] = React.useState<YesNo>("");
-  const [rf1, setRf1] = React.useState<YesNo>("");
-  const [rf2, setRf2] = React.useState<YesNo>("");
-  const [rf3, setRf3] = React.useState<YesNo>("");
-
-  const [check1, setCheck1] = React.useState(true);
-  const [check2, setCheck2] = React.useState(true);
-
-  return (
-    <div style={{ background: "var(--c-bg)", color: "var(--c-text)" }}>
+    <div className="bg-bg text-text">
       {/* HERO */}
-      <FigmaHero
-        title={"Weight Loss Injectables Medical Questionnaire"}
-        badgeSrc="/icons/Greenbackgroundlogo1.svg"/>
+      <SimpleHero
+        title={
+          <>
+            Weight Loss Injectables <br />
+            Medical Questionnaire
+          </>
+        }
+      />
 
       {/* FORM WRAP */}
       <section className="py-10">
-        <div className="mx-auto max-w-[820px] px-6">
-          <p className="text-center text-[13px] font-semibold leading-[1.6]" style={{ color: "var(--c-text)" }}>
-            For patient completion prior to clinician review.
-            <br />
-            Please answer all questions accurately.
-          </p>
-
-          <Divider />
-
-          {/* Patient Details */}
-          <SectionTitle>Patient Details</SectionTitle>
-          <div className="mt-6 grid gap-5">
-            <div className="grid gap-4 lg:grid-cols-3">
-              <Field placeholder="Full Name" />
-              <Field placeholder="Date Of Birth (dd/mm/yyyy)" />
-              <Field placeholder="Address" />
-            </div>
-
-            <div className="grid gap-4 lg:grid-cols-3">
-              <Field placeholder="Postcode" />
-              <Field placeholder="Phone Number" />
-              <Field placeholder="Email" />
-            </div>
-          </div>
-
-          <Divider />
-
-          {/* Medical History */}
-          <SectionTitle>Medical History – Eligibility</SectionTitle>
-          <div className="mt-6 grid gap-6">
-            <div className="grid gap-4 lg:grid-cols-2">
-              <Field placeholder="Your height (cm)" />
-              <Field placeholder="Your weight (kg)" />
-            </div>
-
-            <div className="flex items-start gap-6">
-              <p className="text-[12px] leading-[1.6]" style={{ color: "var(--c-text-black)" }}>
-                Have you been diagnosed with obesity (BMI ≥ 30), or BMI ≥ 27 with
-                comorbidities?
-              </p>
-              <YesNoRow value={qObesity} onChange={setQObesity} />
-            </div>
-
-            <div className="flex items-start gap-6">
-              <p className="text-[12px] leading-[1.6]" style={{ color: "var(--c-text-black)" }}>
-                Do you have any of the following conditions? (Tick all that apply)
-              </p>
-              <div className="ml-auto w-[120px]" />
-            </div>
-
-            {/* tick list + Yes/No columns (matches figma vibe) */}
-            <div className="space-y-3">
-              {[
-                "Type 2 Diabetes",
-                "Hypertension",
-                "High Cholesterol",
-                "Sleep Apnoea",
-                "Polycystic Ovary Syndrome (PCOS)",
-                "Cardiovascular Disease",
-              ].map((label) => (
-                <div key={label} className="flex items-center gap-4">
-                  <label className="flex items-center gap-3 text-[12px]" style={{ color: "var(--c-text-black)" }}>
-                    <input type="checkbox" className="h-[14px] w-[14px]" />
-                    {label}
-                  </label>
-                  <div className="ml-auto flex items-center gap-8">
-                    <span className="text-[12px]" style={{ color: "var(--c-text-black)" }}>
-                      Yes
-                    </span>
-                    <span className="text-[12px]" style={{ color: "var(--c-text-black)" }}>
-                      No
-                    </span>
-                    <span className="w-[14px]" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <Divider />
-
-          {/* Mental health */}
-          <SectionTitle>Mental Health Screening</SectionTitle>
-          <div className="mt-6 grid gap-6">
-            <div className="flex items-start gap-6">
-              <p className="text-[12px] leading-[1.6]" style={{ color: "var(--c-text-black)" }}>
-                Have you ever been diagnosed with any mental health condition
-                (e.g. depression, anxiety, eating disorder)?
-              </p>
-              <YesNoRow value={mh1} onChange={setMh1} />
-            </div>
-
-            <div className="grid gap-2">
-              <div className="text-[12px]" style={{ color: "var(--c-text-black)" }}>
-                If yes, please provide details
-              </div>
-              <TextArea placeholder="" rows={3} />
-            </div>
-
-            <div className="flex items-start gap-6">
-              <p className="text-[12px] leading-[1.6]" style={{ color: "var(--c-text-black)" }}>
-                Are you currently receiving treatment or taking medication for any
-                mental health condition?
-              </p>
-              <YesNoRow value={mh2} onChange={setMh2} />
-            </div>
-
-            <div className="grid gap-2">
-              <div className="text-[12px]" style={{ color: "var(--c-text-black)" }}>
-                If yes, please specify
-              </div>
-              <TextArea placeholder="" rows={3} />
-            </div>
-          </div>
-
-          <Divider />
-
-          {/* Contraindications */}
-          <SectionTitle>Contraindications &amp; Safety Screening</SectionTitle>
-          <div className="mt-6 grid gap-5">
-            {[
-              ["Are you pregnant, planning pregnancy, or breastfeeding?", c1, setC1],
-              ["Do you have a history of pancreatitis?", c2, setC2],
-              ["Do you have thyroid cancer or MEN2 syndrome in your family?", c3, setC3],
-              ["Do you have severe gastrointestinal disease?", c4, setC4],
-              [
-                "Have you ever had an allergic reaction to GLP-1 medications (e.g. Wegovy, Saxenda, Mounjaro)?",
-                c5,
-                setC5,
-              ],
-            ].map(([label, value, setter]) => (
-              <div key={label as string} className="flex items-start gap-6">
-                <p className="text-[12px] leading-[1.6]" style={{ color: "var(--c-text-black)" }}>
-                  {label as string}
-                </p>
-                <YesNoRow value={value as YesNo} onChange={setter as any} />
-              </div>
-            ))}
-          </div>
-
-          <Divider />
-
-          {/* Current medication */}
-          <SectionTitle>Current Medication</SectionTitle>
-          <div className="mt-6 grid gap-6">
-            <div className="grid gap-2">
-              <div className="text-[12px]" style={{ color: "var(--c-text-black)" }}>
-                Please list all medications you are currently taking
-              </div>
-              <TextArea placeholder="" rows={3} />
-            </div>
-
-            <div className="flex items-start gap-6">
-              <p className="text-[12px] leading-[1.6]" style={{ color: "var(--c-text-black)" }}>
-                Are you taking insulin or sulfonylureas?
-              </p>
-              <YesNoRow value={cm1} onChange={setCm1} />
-            </div>
-
-            <div className="flex items-start gap-6">
-              <p className="text-[12px] leading-[1.6]" style={{ color: "var(--c-text-black)" }}>
-                Are you taking any weight-loss medications currently?
-              </p>
-              <YesNoRow value={cm2} onChange={setCm2} />
-            </div>
-          </div>
-
-          <Divider />
-
-          {/* Lifestyle */}
-          <SectionTitle>Lifestyle &amp; Previous Weight Management</SectionTitle>
-          <div className="mt-6 grid gap-6">
-            <div className="flex items-start gap-6">
-              <p className="text-[12px] leading-[1.6]" style={{ color: "var(--c-text-black)" }}>
-                Have you previously attempted structured weight-loss programmes?
-              </p>
-              <YesNoRow value={ls1} onChange={setLs1} />
-            </div>
-
-            <div className="grid gap-2">
-              <div className="text-[12px]" style={{ color: "var(--c-text-black)" }}>
-                If yes, describe:
-              </div>
-              <TextArea placeholder="" rows={3} />
-            </div>
-
-            <div className="flex items-start gap-6">
-              <p className="text-[12px] leading-[1.6]" style={{ color: "var(--c-text-black)" }}>
-                Are you currently following any diet or exercise plan?
-              </p>
-              <YesNoRow value={ls2} onChange={setLs2} />
-            </div>
-
-            <div className="grid gap-2">
-              <div className="text-[12px]" style={{ color: "var(--c-text-black)" }}>
-                If yes, describe:
-              </div>
-              <TextArea placeholder="" rows={3} />
-            </div>
-          </div>
-
-          <Divider />
-
-          {/* Red flags */}
-          <SectionTitle>Symptoms &amp; Red Flags</SectionTitle>
-          <div className="mt-6 grid gap-5">
-            {[
-              ["Do you experience unexplained abdominal pain?", rf1, setRf1],
-              ["Do you have persistent vomiting or nausea?", rf2, setRf2],
-              ["Any recent unexplained weight loss?", rf3, setRf3],
-            ].map(([label, value, setter]) => (
-              <div key={label as string} className="flex items-start gap-6">
-                <p className="text-[12px] leading-[1.6]" style={{ color: "var(--c-text-black)" }}>
-                  {label as string}
-                </p>
-                <YesNoRow value={value as YesNo} onChange={setter as any} />
-              </div>
-            ))}
-          </div>
-
-          <Divider />
-
-          {/* Photo upload */}
-          <SectionTitle>Patient Photo Upload Requirements</SectionTitle>
-          <div className="mt-6 text-[12px] leading-[1.7]" style={{ color: "var(--c-text-black)" }}>
-            <p>
-              As part of clinical verification, please upload the following photos:
+        <div className="mx-auto max-w-[1174px] px-6">
+          <div className="bg-white rounded-[20px] border border-border shadow-soft px-8 lg:px-32 py-12">
+            <p className="text-center font-inter font-bold text-[32px] leading-[1.4] text-text ">
+              For patient completion prior to clinician review.
+              <br />
+              Please answer all questions accurately.
             </p>
-            <p className="mt-2">
-              Front view – minimally dressed (sports bra/shorts or boxers/shorts). Abdomen and legs visible. Face optional.
-              <br />
-              Side view – same clothing guidance.
-              <br />
-              Back view – same clothing guidance.
-              <br />
-              Photos must be recent (taken within the last 7 days).
-            </p>
+
+            <FormDivider />
+
+            <PatientDetailsSection
+              fullName={states.fullName}
+              onFullNameChange={setters.setFullName}
+              dob={states.dob}
+              onDobChange={setters.setDob}
+              address={states.address}
+              onAddressChange={setters.setAddress}
+              postcode={states.postcode}
+              onPostcodeChange={setters.setPostcode}
+              phoneNumber={states.phoneNumber}
+              onPhoneNumberChange={setters.setPhoneNumber}
+              email={states.email}
+              onEmailChange={setters.setEmail}
+            />
+            <FormDivider />
+
+            <MedicalHistorySection
+              height={states.height}
+              onHeightChange={setters.setHeight}
+              weight={states.weight}
+              onWeightChange={setters.setWeight}
+              qObesity={states.qObesity}
+              onObesityChange={setters.setQObesity}
+              conditionValues={[
+                states.cond1,
+                states.cond2,
+                states.cond3,
+                states.cond4,
+                states.cond5,
+                states.cond6,
+              ]}
+              onConditionChange={(idx, v) => {
+                const settersList = [
+                  setters.setCond1,
+                  setters.setCond2,
+                  setters.setCond3,
+                  setters.setCond4,
+                  setters.setCond5,
+                  setters.setCond6,
+                ];
+                settersList[idx](v);
+              }}
+            />
+            <FormDivider />
+
+            <MentalHealthSection
+              mh1={states.mh1}
+              onMh1Change={setters.setMh1}
+              mh2={states.mh2}
+              onMh2Change={setters.setMh2}
+            />
+            <FormDivider />
+
+            <SafetyScreeningSection
+              values={[states.c1, states.c2, states.c3, states.c4, states.c5]}
+              onChange={(idx, v) => {
+                const settersList = [
+                  setters.setC1,
+                  setters.setC2,
+                  setters.setC3,
+                  setters.setC4,
+                  setters.setC5,
+                ];
+                settersList[idx](v);
+              }}
+            />
+            <FormDivider />
+
+            <MedicationSection
+              cm1={states.cm1}
+              onCm1Change={setters.setCm1}
+              cm2={states.cm2}
+              onCm2Change={setters.setCm2}
+            />
+            <FormDivider />
+
+            <LifestyleSection
+              ls1={states.ls1}
+              onLs1Change={setters.setLs1}
+              ls1Details={states.ls1Details}
+              onLs1DetailsChange={setters.setLs1Details}
+              ls2={states.ls2}
+              onLs2Change={setters.setLs2}
+              ls2Details={states.ls2Details}
+              onLs2DetailsChange={setters.setLs2Details}
+            />
+            <FormDivider />
+
+            <SymptomsSection
+              values={[states.rf1, states.rf2, states.rf3]}
+              onChange={(idx, v) => {
+                const settersList = [setters.setRf1, setters.setRf2, setters.setRf3];
+                settersList[idx](v);
+              }}
+            />
+            <FormDivider />
+
+            <PhotoUploadSection
+              frontPhoto={states.frontPhoto}
+              onFrontPhotoChange={setters.setFrontPhoto}
+              sidePhoto={states.sidePhoto}
+              onSidePhotoChange={setters.setSidePhoto}
+              backPhoto={states.backPhoto}
+              onBackPhotoChange={setters.setBackPhoto}
+            />
+            <FormDivider />
+
+            <PatientDeclarationSection
+              check1={states.check1}
+              onCheck1Change={setters.setCheck1}
+              check2={states.check2}
+              onCheck2Change={setters.setCheck2}
+              signature={states.signature}
+              onSignatureChange={setters.setSignature}
+              date={states.date}
+              onDateChange={setters.setDate}
+              onSubmit={handleSubmit}
+              isSubmitting={isUpdatingPatient || isSubmittingAssessment || isCreatingCheckout}
+            />
+
+            <div className="h-[24px]" />
           </div>
-
-          <div className="mt-6 grid gap-5 lg:grid-cols-2">
-            <UploadBox label="Upload Front Photo" />
-            <UploadBox label="Upload Side Photo" />
-            <UploadBox label="Upload Back Photo" />
-          </div>
-
-          <Divider />
-
-          {/* Declaration */}
-          <SectionTitle>Patient Declaration</SectionTitle>
-          <div className="mt-6 space-y-3">
-            <label className="flex items-start gap-3 text-[12px]" style={{ color: "var(--c-text-black)" }}>
-              <input
-                type="checkbox"
-                checked={check1}
-                onChange={(e) => setCheck1(e.target.checked)}
-                className="mt-[2px] h-[14px] w-[14px]"
-              />
-              I confirm the information I have provided is accurate to the best of my knowledge.
-            </label>
-
-            <label className="flex items-start gap-3 text-[12px]" style={{ color: "var(--c-text-black)" }}>
-              <input
-                type="checkbox"
-                checked={check2}
-                onChange={(e) => setCheck2(e.target.checked)}
-                className="mt-[2px] h-[14px] w-[14px]"
-              />
-              I confirm that I am over 18 years of age.
-            </label>
-          </div>
-
-          <div className="mt-6 grid gap-4 lg:grid-cols-2">
-            <Field placeholder="Signature" />
-            <Field placeholder="Date" />
-          </div>
-
-          <div className="h-[24px]" />
         </div>
       </section>
+
+      {/* Backend Error Message Modal */}
+      <Modal 
+        isOpen={!!errorModalMessage} 
+        onClose={() => setErrorModalMessage(null)}
+        title="Assessment Notice"
+      >
+        <p className="whitespace-pre-wrap">{errorModalMessage}</p>
+      </Modal>
     </div>
   );
 }
 
-function UploadBox({ label }: { label: string }) {
+export default function WeightLossAssessmentPage() {
   return (
-    <div
-      className="flex h-[70px] items-center justify-center rounded-[8px] border border-dashed"
-      style={{
-        borderColor: "rgba(0,0,0,0.25)",
-        background: "rgba(255,255,255,0.35)",
-      }}
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-bg flex flex-col items-center justify-center p-6 text-gray-500">
+          <svg className="animate-spin h-8 w-8 text-[var(--c-primary)] mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span className="text-sm font-semibold">Loading questionnaire...</span>
+        </div>
+      }
     >
-      <div className="flex items-center gap-3 text-[12px]" style={{ color: "var(--c-text-black)" }}>
-        <span
-          className="inline-flex h-[22px] w-[22px] items-center justify-center rounded-[4px]"
-          style={{ border: "1px solid rgba(0,0,0,0.22)" }}
-        >
-          ⎘
-        </span>
-        {label}
-      </div>
-    </div>
+      <WeightLossAssessmentContent />
+    </Suspense>
   );
 }

@@ -30,7 +30,7 @@ export function FaqAccordion({
             key={item.q}
             className="rounded-[10px] px-6 py-5"
             style={{
-              background: "var(--c-surface)",
+              background: "var(--c-faq-bg)",
               border: "1px solid var(--c-border)",
             }}
           >
@@ -40,7 +40,7 @@ export function FaqAccordion({
               className="w-full flex items-start justify-between gap-4 text-left"
             >
               <div>
-                <h4 className="text-[18px] font-semibold leading-[1.25]" style={{ color: "var(--c-text)" }}>
+                <h4 className="text-[20px] lg:text-[28px] font-bold leading-[1.25]" style={{ color: "var(--c-text-muted)" }}>
                   {item.q}
                 </h4>
               </div>
@@ -68,7 +68,7 @@ export function FaqAccordion({
             </button>
 
             {open && (
-              <div className="mt-3 text-[13px] leading-[1.6]" style={{ color: "var(--c-text-muted)" }}>
+              <div className="mt-4 text-[16px] lg:text-[28px] leading-[1.7]" style={{ color: "var(--c-black)" }}>
                 {item.a}
               </div>
             )}

@@ -3,12 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/history", label: "History" },
-  { href: "/calendar", label: "Calendar" },
-  { href: "/about", label: "About Us" },
-];
+
 
 export function Footer() {
   return (
@@ -26,7 +21,7 @@ export function Footer() {
           {/* Top right: Legal + social icons */}
           <div className="mt-6 flex items-center justify-end gap-8">
             <Link href="/legal" className="text-[20px] font-medium opacity-95 hover:opacity-80">
-              Legal
+              Terms & Conditions and Privacy Policy
             </Link>
 
             <div className="flex items-center gap-8">
@@ -48,20 +43,10 @@ export function Footer() {
 
           {/* Bottom row: left nav + right copyright */}
           <div className="relative py-5 top-5 mt-12 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <nav className="flex flex-wrap items-center gap-5 lg:gap-12">
-              {navLinks.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className="text-[22px] font-medium opacity-95 hover:opacity-80"
-                >
-                  {l.label}
-                </Link>
-              ))}
-            </nav>
+         
 
             <p className="text-[20px] font-medium opacity-95">
-              © 2024 Online GPs. All rights reserved.
+              © 2026 Online GPs. All rights reserved.
             </p>
           </div>
         </div>

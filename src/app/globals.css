@@ -1,9 +1,6 @@
-
-
 @import "../styles/theme.css";
 
 
-/* Base styles */
 html,
 body {
   height: 100%;
@@ -41,7 +38,6 @@ a:hover {
   opacity: 0.8;
 }
 
-/* Remove default button styles */
 button {
   font-family: inherit;
   cursor: pointer;
@@ -67,102 +63,28 @@ img {
   outline-offset: 2px;
 }
 
-/* Figma hero: diagonal overlay + bottom-right corner cut */
-.hero-diagonal {
-  position: relative;
-  overflow: hidden;
-}
-
-/* The subtle diagonal overlay on the right */
-.hero-diagonal::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-
-  /* right diagonal band */
-  clip-path: polygon(72% 0, 100% 0, 100% 100%, 36% 100%);
-  background: rgba(255, 255, 255, 0.18);
-  z-index: 1;
-}
-
-/* ✅ This creates the bottom-right "cut out" like Figma */
-.hero-diagonal::before {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 640px;     /* tweak if needed */
-  height: 310px;    /* tweak if needed */
-
-  /* White wedge cut */
-  background: var(--c-bg);
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-  z-index: 2;       /* must sit above overlay */
-}
-
-/* Ensure content sits above background layers */
-.hero-inner {
-  position: relative;
-  z-index: 3;
-}
-
-
-
-
-/* Figma-like hero with bottom-right white cut + subtle diagonal tint */
-.hero-figma {
-  position: relative;
-  overflow: hidden;
-}
-
-/* subtle diagonal tint overlay (like your figma soft panel) */
-.hero-figma::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: rgba(255, 255, 255, 0.12);
-  clip-path: polygon(72% 0, 100% 0, 100% 100%, 86% 100%);
-}
-
-/* ✅ actual CUT OUT (white triangle) bottom-right */
-.hero-figma::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 38%;
-  height: 56%;
-  pointer-events: none;
-  background: var(--c-bg); /* must match page background */
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-}
-
-/* ensures hero content stays above overlays */
-.hero-figma > * {
-  position: relative;
-  z-index: 1;
-}
-
-
 .footer-diagonal {
   position: relative;
   overflow: hidden;
 }
 
-/* subtle diagonal highlight like Figma */
-.footer-diagonal::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: rgba(255, 255, 255, 0.12);
-  clip-path: polygon(65% 0, 100% 0, 100% 100%, 82% 100%);
-}
-
 /* keep footer content above overlay */
-.footer-diagonal > * {
+.footer-diagonal>* {
   position: relative;
   z-index: 1;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

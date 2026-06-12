@@ -5,7 +5,7 @@ import Link from "next/link";
 export function PrivateAppointments() {
   return (
     <section className="bg-[var(--c-bg)]">
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
+      <div className="mx-auto max-w-[1950px] px-6 lg:pr-12 lg:pl-32 xl:pl-[144px] 2xl:pl-[168px]">
         <div className="grid gap-10 py-16 lg:grid-cols-2 lg:items-start">
           {/* LEFT */}
           <div className="max-w-[560px]">
@@ -19,8 +19,8 @@ export function PrivateAppointments() {
             </h2>
 
             <div
-              className="mt-6 space-y-6 text-[15px] leading-[1.8]"
-              style={{ color: "var(--c-text-muted)" }}
+              className="mt-6 space-y-6 text-[20px] leading-[1.8]"
+              style={{ color: "var(--c-text-gray)" }}
             >
               <p>
                 Accessing quality healthcare shouldn&apos;t be complicated. Our
@@ -44,35 +44,12 @@ export function PrivateAppointments() {
               </p>
             </div>
 
-            {/* Start for £49 */}
-            <div className="mt-10">
-              <p
-                className="text-[38px] lg:text-[44px] font-extrabold"
-                style={{
-                  color: "#EA2E83", // your screenshot pink
-                  textShadow: "0 3px 0 rgba(0,0,0,0.08)",
-                }}
-              >
-                Start for £49
-              </p>
-            </div>
+
           </div>
 
           {/* RIGHT */}
           <div className="relative">
-            {/* Top right small CTA */}
-            <div className="flex justify-end">
-              <button
-                className="px-6 py-3 text-[14px] font-semibold text-white"
-                style={{
-                  background: "var(--c-cta-btn)",
-                  borderRadius: "12px",
-                  boxShadow: "var(--shadow-elev)",
-                }}
-              >
-                Access Private GP Care
-              </button>
-            </div>
+
 
             {/* Illustration + card */}
             <div className="relative mt-6 min-h-[360px]">
@@ -90,7 +67,7 @@ export function PrivateAppointments() {
 
               {/* Doctors list card */}
               <div
-                className="absolute left-0 top-[280px] w-[320px] max-w-[92%] rounded-[18px] border bg-[var(--c-surface-2)] p-4"
+                className="absolute left-0 top-[280px] w-[320px] max-w-[280px] rounded-[18px] border bg-[var(--c-surface-2)] p-4"
                 style={{
                   borderColor: "var(--c-border)",
                   boxShadow: "var(--shadow-soft)",
@@ -121,7 +98,7 @@ export function PrivateAppointments() {
                 </div>
 
                 {/* Doctors */}
-                <div className="mt-6 space-y-4">
+                <div className="mt-6 space-y-8">
                   <DoctorRow
                     name="Dr. Sarah Mohamad"
                     role="General Practitioner"
@@ -135,32 +112,28 @@ export function PrivateAppointments() {
                 </div>
 
                 {/* Card button */}
-                <div className="mt-5">
+                <div className="mt-5 space-y-10">
                   <Link href="/doctors" >
-                  <Button
-                    className="w-full rounded-[12px] px-4 py-2 text-[12px] font-semibold"
-                    style={{
-                      background: "color-mix(in srgb, var(--c-surface) 85%, white)",
-                      color: "var(--c-text-muted)",
-                    }}
-                  >
-                    See All Doctors
-                  </Button>
+                    <Button
+                      className="flex flex-row gap-10 group w-[240px] flex items-center justify-center px-6 text-[12px] font-semibold"
+                      style={{
+                        height: "43px",
+                        background: "rgba(163, 176, 148, 0.1)",
+                        color: "var(--c-text-muted)",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      <span>See All Doctors</span>
+                      <Image
+                        src="/icons/back.svg"
+                        alt="arrow"
+                        width={18}
+                        height={20}
+                        className="flex -mr-10"
+                      />
+                    </Button>
                   </Link>
                 </div>
-              </div>
-
-              {/* Bottom big CTA */}
-              <div className="pt-[620px] lg:pt-[540px]">
-                <Link href="/doctors">
-                <Button
-                  variant="cta"
-                  size="lg"
-                  className="w-full"
-                >
-                  BOOK YOUR APPOINTMENT
-                </Button>
-                </Link>
               </div>
             </div>
           </div>
